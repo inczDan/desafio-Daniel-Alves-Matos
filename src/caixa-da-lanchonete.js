@@ -10,29 +10,61 @@ class CaixaDaLanchonete {
             combo1 : 9.50,
             combo2 : 7.50
         }
+        this.formasPagamento = ['dinheiro', 'credito', 'debito'] 
         this.desconto = 0.95   
         this.taxa = 1.03
     }
 
-    calcularValorDaCompra(metodoDePagamento, itens) {
+    validarItens = (itens) => {
         if (itens.length === 0){
             return "Não há itens no carrinho de compra!"
         }
-        
+    }
+    
+    validarProdutos = (produto) => {
+        if (produto.length < 2 || !(produto in this.cardapio)){
+            return "Item inválido!"
+        }
+    }
+
+    validarQntProduto = (quantidadeProduto) => {
+        if (quantidadeProduto === 0){
+            return `Quantidade inválida!`
+        }
+    }
+    
+    validarPagamento = (metodoDePagamento) => {
+        if (!this.formasPagamento.includes(metodoDePagamento)){
+            return "Forma de pagamento inválida!"
+        }
+    }
+
+    calcularValorDaCompra(metodoDePagamento, itens) {
+       const validadorItens = this.validarItens(itens)
+        if(validadorItens){
+            return validadorItens
+        }
+        const validadorPagamento = this.validarPagamento(metodoDePagamento)
+        if(validadorPagamento){
+            return validadorPagamento
+        }
 
         let valorTotalPedido = 0
         let carrinhoCompras = 0
         
         for(const item of itens){ // calcula precos e visualiza itens
             const produto = item.split(',')[0]
-            if (produto.length < 2 || !(produto in this.cardapio)){
-                return "Item inválido!"
+            const validadorProduto = this.validarProdutos(produto)
+            if(validadorProduto){
+                return validadorProduto
             }
+
             const quantidadeProduto = Number(item.slice(item.length-1))
             carrinhoCompras += quantidadeProduto
             valorTotalPedido += this.cardapio[produto] * quantidadeProduto 
-            if (quantidadeProduto === 0){
-                return `Quantidade inválida!`
+            const validadorQntProduto = this.validarQntProduto(quantidadeProduto)
+            if(validadorQntProduto){
+                return validadorQntProduto
             }
         }
         valorTotalPedido = this.testaItensEPagamento(metodoDePagamento, valorTotalPedido, carrinhoCompras)
