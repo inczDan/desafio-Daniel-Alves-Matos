@@ -10,6 +10,10 @@ class CaixaDaLanchonete {
             combo1 : 9.50,
             combo2 : 7.50
         }
+        this.itensExtras = [
+            {item: 'chantily', principal: 'cafe'},
+            {item: 'queijo', principal: 'sanduiche'}
+        ]
         this.formasPagamento = ['dinheiro', 'credito', 'debito'] 
         this.desconto = 0.95   
         this.taxa = 1.03
@@ -21,10 +25,23 @@ class CaixaDaLanchonete {
         }
     }
     
+
     validarProdutos = (produto) => {
         if (produto.length < 2 || !(produto in this.cardapio)){
             return "Item inválido!"
         }
+    }
+
+    validarItensExtras = (item) => {
+        return this.itensExtras.some(itemAtual => itemAtual.item === item)
+    }
+
+    validarPrincipalPresente(item){
+        const itemExtra = this.itensExtras.find(itemAtual => itemAtual.item === item)
+        if(itemExtra){
+            return itens.includes(itemExtra.principal)
+        }
+        return false
     }
 
     validarQntProduto = (quantidadeProduto) => {
@@ -33,11 +50,13 @@ class CaixaDaLanchonete {
         }
     }
     
+
     validarPagamento = (metodoDePagamento) => {
         if (!this.formasPagamento.includes(metodoDePagamento)){
             return "Forma de pagamento inválida!"
         }
     }
+
 
     calcularValorDaCompra(metodoDePagamento, itens) {
        const validadorItens = this.validarItens(itens)
@@ -52,8 +71,15 @@ class CaixaDaLanchonete {
         let valorTotalPedido = 0
         let carrinhoCompras = 0
         
-        for(const item of itens){ // calcula precos e visualiza itens
+        for(const item of itens){
             const produto = item.split(',')[0]
+
+            if(this.validarItensExtras(item)){
+                if(!this.validarPrincipalPresente(produto)){
+                    return 'Item extra não pode ser pedido sem o principal'
+                }
+            }
+
             const validadorProduto = this.validarProdutos(produto)
             if(validadorProduto){
                 return validadorProduto
@@ -80,116 +106,7 @@ class CaixaDaLanchonete {
         }
         return valorTotalPedido
     }
-    
-    // console.log(`R$ ${valorTotalPedido.toFixed(2).replace('.',',')}`)
-
 }
 
 
 export { CaixaDaLanchonete };
-
-
-
-
-// function calcularValorDaCompra(metodoDePagamento, itens) {
-//     const cardapio = {
-//         cafe : 3.00,
-//         chantily : 1.50,
-//         suco : 6.20,
-//         sanduiche : 6.50,
-//         queijo : 2.00,
-//         combo1 : 9.50,
-//         combo2 : 7.50
-//     }
-
-//     const desconto = 0.95
-//     const taxa = 1.03
-//     let valorTotalPedido = 0
-//     let produto
-//     let carrinhoCompras 
-    
-//     if (itens.length < 1){
-//         return "Não há itens no carrinho de compra!"
-//     }
-
-//     for(const item of itens){ // calcula precos e visualiza itens
-//         produto = item.split(',')[0]
-//         const quantidadeproduto = item.slice(item.length-1)
-//         carrinhoCompras += quantidadeproduto
-//         produto in cardapio ? valorTotalPedido += cardapio[produto] * quantidadeproduto : undefined
-//         if (quantidadeproduto < 1){
-//             return `Quantidade inválida!`
-//         }
-//     }
-    
-
-//     if (metodoDePagamento === 'dinheiro'){
-//         valorTotalPedido = valorTotalPedido * desconto
-//     } else if (metodoDePagamento === 'credito'){
-//         valorTotalPedido = valorTotalPedido * taxa
-//     }
-
-//     console.log(`R$ ${valorTotalPedido.toFixed(2).replace('.',',')}`)
-
-//     return "";
-// }
-
-
-
-// const input = ['cafe,1']
-// console.log(calcularValorDaCompra('debito',input))
-
-
-
-
-// class CaixaDaLanchonete {
-
-//     constructor () {
-//         this.cardapio = {
-//             cafe : 3.00,
-//             chantily : 1.50,
-//             suco : 6.20,
-//             sanduiche : 6.50,
-//             queijo : 2.00,
-//             combo1 : 9.50,
-//             combo2 : 7.50
-//         }
-//         this.desconto = 0.95   
-//         this.taxa = 1.03
-//     }
-
-//     calcularValorDaCompra(metodoDePagamento, itens) {
-//         let valorTotalPedido = 0
-//         let produto
-//         let carrinhoCompras = 0
-        
-//         for(const item of itens){ // calcula precos e visualiza itens
-//             produto = item.split(',')[0]
-//             const quantidadeproduto = item.slice(item.length-1)
-//             carrinhoCompras += quantidadeproduto
-//             produto in this.cardapio ? valorTotalPedido += this.cardapio[produto] * quantidadeproduto : undefined
-//             if (quantidadeproduto < 1){
-//                 return `Quantidade inválida!`
-//             }
-//         }
-//         valorTotalPedido = this.testaItensEPagamento(metodoDePagamento, valorTotalPedido)
-//         return `R$ ${valorTotalPedido.toFixed(2).replace('.',',')}`;
-//     }
-
-    
-//     testaItensEPagamento = (metodoDePagamento, valorTotalPedido) =>{
-//         if (itens.length < 1){
-//             return "Não há itens no carrinho de compra!"
-//         }
-    
-//         if (metodoDePagamento === 'dinheiro'){
-//             valorTotalPedido = valorTotalPedido * desconto
-//         } else if (metodoDePagamento === 'credito'){
-//             valorTotalPedido = valorTotalPedido * taxa
-//         }
-
-//     }
-    
-//     // console.log(`R$ ${valorTotalPedido.toFixed(2).replace('.',',')}`)
-
-// }
